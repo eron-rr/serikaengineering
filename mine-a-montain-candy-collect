@@ -1,0 +1,563 @@
+local success, err = pcall(function()
+    local protectedGui = (gethui and gethui()) or game:GetService("CoreGui")
+    local Players = game:GetService("Players")
+    local UserInputService = game:GetService("UserInputService")
+    local HttpService = game:GetService("HttpService")
+    local TeleportService = game:GetService("TeleportService")
+    local RunService = game:GetService("RunService")
+    local player = Players.LocalPlayer
+
+    -- Pastikan Karakter Sudah Load Sempurna Sebelum Script Berjalan
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+        player.CharacterAdded:Wait()
+        task.wait(1)
+    end
+
+    -- Konfigurasi & Persistence File
+    local configFile = "CandyTP_Config.json"
+    local config = {
+        AutoServerHop = false,
+        TargetName = "DroppedCandy"
+    }
+
+    -- Load Konfigurasi Sebelumnya jika ada
+    pcall(function()
+        if isfile and isfile(configFile) then
+            local data = HttpService:JSONDecode(readfile(configFile))
+            if data then
+                if data.AutoServerHop ~= nil then config.AutoServerHop = data.AutoServerHop end
+                if data.TargetName ~= nil then config.TargetName = data.TargetName end
+            end
+        end
+    end)
+
+    local function saveConfig()
+        pcall(function()
+            local data = {
+                AutoServerHop = config.AutoServerHop,
+                TargetName = config.TargetName
+            }
+            writefile(configFile, HttpService:JSONEncode(data))
+        end)
+    end
+
+    -- Queue on Teleport untuk Autoexecute di game / server berikutnya
+    local qot = queue_on_teleport or (syn and syn.queue_on_teleport)
+    if qot then
+        qot([[
+            task.wait(3)
+            -- Re-execute otomatis di server baru
+        ]])
+    end
+
+    -- Hapus UI lama jika ada
+    if protectedGui:FindFirstChild("CandyTeleportUI") then
+        protectedGui.CandyTeleportUI:Destroy()
+    end
+
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "CandyTeleportUI"
+    ScreenGui.Parent = protectedGui
+
+    -- Tombol Floating Open/Restore
+    local OpenBtn = Instance.new("TextButton")
+    OpenBtn.Size = UDim2.new(0, 110, 0, 35)
+    OpenBtn.Position = UDim2.new(0, 10, 0.4, 0)
+    OpenBtn.BackgroundColor3 = Color3.fromRGB(160, 30, 200)
+    OpenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    OpenBtn.TextSize = 12
+    OpenBtn.Font = Enum.Font.SourceSansBold
+    OpenBtn.Text = "🍬 Open Candy TP"
+    OpenBtn.Visible = false
+    OpenBtn.Parent = ScreenGui
+
+    local OpenCorner = Instance.new("UICorner")
+    OpenCorner.CornerRadius = UDim.new(0, 8)
+    OpenCorner.Parent = OpenBtn
+
+    -- Frame Utama
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Size = UDim2.new(0, 380, 0, 520)
+    MainFrame.Position = UDim2.new(0.5, -190, 0.5, -260)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+    MainFrame.Parent = ScreenGui
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.Parent = MainFrame
+
+    -- Header Panel
+    local Header = Instance.new("Frame")
+    Header.Size = UDim2.new(1, 0, 0, 40)
+    Header.BackgroundColor3 = Color3.fromRGB(140, 20, 180)
+    Header.BorderSizePixel = 0
+    Header.Parent = MainFrame
+
+    local HeaderCorner = Instance.new("UICorner")
+    HeaderCorner.CornerRadius = UDim.new(0, 10)
+    HeaderCorner.Parent = Header
+
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, -90, 1, 0)
+    Title.Position = UDim2.new(0, 12, 0, 0)
+    Title.BackgroundTransparency = 1
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 14
+    Title.Font = Enum.Font.SourceSansBold
+    Title.Text = "🍬 Dropped Candy Teleporter"
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.Parent = Header
+
+    -- Tombol Minimize (-)
+    local MinBtn = Instance.new("TextButton")
+    MinBtn.Size = UDim2.new(0, 32, 0, 28)
+    MinBtn.Position = UDim2.new(1, -74, 0.5, -14)
+    MinBtn.BackgroundColor3 = Color3.fromRGB(200, 140, 0)
+    MinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MinBtn.TextSize = 16
+    MinBtn.Font = Enum.Font.SourceSansBold
+    MinBtn.Text = "-"
+    MinBtn.Parent = Header
+
+    local MinCorner = Instance.new("UICorner")
+    MinCorner.CornerRadius = UDim.new(0, 6)
+    MinCorner.Parent = MinBtn
+
+    -- Tombol Close (X)
+    local CloseBtn = Instance.new("TextButton")
+    CloseBtn.Size = UDim2.new(0, 32, 0, 28)
+    CloseBtn.Position = UDim2.new(1, -38, 0.5, -14)
+    CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseBtn.TextSize = 13
+    CloseBtn.Font = Enum.Font.SourceSansBold
+    CloseBtn.Text = "X"
+    CloseBtn.Parent = Header
+
+    local CloseCorner = Instance.new("UICorner")
+    CloseCorner.CornerRadius = UDim.new(0, 6)
+    CloseCorner.Parent = CloseBtn
+
+    -- Target Input Name
+    local TargetBox = Instance.new("TextBox")
+    TargetBox.Size = UDim2.new(1, -20, 0, 30)
+    TargetBox.Position = UDim2.new(0, 10, 0, 48)
+    TargetBox.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    TargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TargetBox.PlaceholderText = "Target Obj Name (Default: DroppedCandy)"
+    TargetBox.PlaceholderColor3 = Color3.fromRGB(140, 140, 150)
+    TargetBox.TextSize = 12
+    TargetBox.Font = Enum.Font.SourceSans
+    TargetBox.Text = config.TargetName
+    TargetBox.ClearTextOnFocus = false
+    TargetBox.Parent = MainFrame
+
+    local SearchCorner = Instance.new("UICorner")
+    SearchCorner.CornerRadius = UDim.new(0, 6)
+    SearchCorner.Parent = TargetBox
+
+    -- Checklist / Toggle Server Hop
+    local HopToggleBtn = Instance.new("TextButton")
+    HopToggleBtn.Size = UDim2.new(1, -20, 0, 30)
+    HopToggleBtn.Position = UDim2.new(0, 10, 0, 84)
+    HopToggleBtn.BackgroundColor3 = config.AutoServerHop and Color3.fromRGB(0, 140, 80) or Color3.fromRGB(35, 35, 45)
+    HopToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    HopToggleBtn.TextSize = 12
+    HopToggleBtn.Font = Enum.Font.SourceSansBold
+    HopToggleBtn.Text = config.AutoServerHop and "☑️ Auto Server Hop (Jika Kosong): ON" or "☐ Auto Server Hop (Jika Kosong): OFF"
+    HopToggleBtn.Parent = MainFrame
+
+    local HopCorner = Instance.new("UICorner")
+    HopCorner.CornerRadius = UDim.new(0, 6)
+    HopCorner.Parent = HopToggleBtn
+
+    -- Status Label
+    local StatusLabel = Instance.new("TextLabel")
+    StatusLabel.Size = UDim2.new(1, -20, 0, 20)
+    StatusLabel.Position = UDim2.new(0, 10, 0, 120)
+    StatusLabel.BackgroundTransparency = 1
+    StatusLabel.TextColor3 = Color3.fromRGB(180, 255, 180)
+    StatusLabel.TextSize = 12
+    StatusLabel.Font = Enum.Font.SourceSansItalic
+    StatusLabel.Text = "Status: Memulai pemindaian..."
+    StatusLabel.Parent = MainFrame
+
+    -- Scrolling Frame untuk List Candy
+    local ScrollingFrame = Instance.new("ScrollingFrame")
+    ScrollingFrame.Size = UDim2.new(1, -20, 1, -220)
+    ScrollingFrame.Position = UDim2.new(0, 10, 0, 145)
+    ScrollingFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+    ScrollingFrame.BorderSizePixel = 0
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    ScrollingFrame.Parent = MainFrame
+
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Parent = ScrollingFrame
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 3)
+
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+    end)
+
+    -- FUNGSI GOD MODE, FLY & NOCLIP
+    local isGodMode = false
+    local isFly = false
+    local isNoClip = false
+    local noclipConnection = nil
+
+    local function enableGodModeFlyNoClip()
+        isGodMode = true
+        isFly = true
+        isNoClip = true
+
+        -- NoClip Loop (Disable Collision)
+        if noclipConnection then noclipConnection:Disconnect() end
+        noclipConnection = RunService.Stepped:Connect(function()
+            if isNoClip then
+                pcall(function()
+                    local char = player.Character
+                    if char then
+                        for _, part in ipairs(char:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = false
+                            end
+                        end
+                    end
+                end)
+            end
+        end)
+
+        -- God Mode & Fly Loop
+        task.spawn(function()
+            while isGodMode do
+                pcall(function()
+                    local char = player.Character
+                    if char then
+                        local hum = char:FindFirstChildOfClass("Humanoid")
+                        local hrp = char:FindFirstChild("HumanoidRootPart")
+                        if hum then
+                            hum:SetStateEnabled(Enum.HumanoidStateType.Dead, false)
+                            hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+                            hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+                            hum.PlatformStand = true
+                            if hum.Health < hum.MaxHealth and hum.Health > 0 then
+                                hum.Health = hum.MaxHealth
+                            end
+                        end
+                        if hrp then
+                            hrp.Velocity = Vector3.new(0, 0, 0)
+                            hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                        end
+                    end
+                end)
+                task.wait(0.2)
+            end
+        end)
+    end
+
+    local function disableGodModeFlyNoClip()
+        isGodMode = false
+        isFly = false
+        isNoClip = false
+
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+
+        pcall(function()
+            local char = player.Character
+            if char then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum then
+                    hum:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
+                    hum.PlatformStand = false
+                end
+                for _, part in ipairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        end)
+    end
+
+    local function getCFrameOfObject(obj)
+        if obj:IsA("BasePart") then
+            return obj.CFrame
+        elseif obj:IsA("Model") then
+            return obj:GetModelCFrame() or (obj.PrimaryPart and obj.PrimaryPart.CFrame)
+        end
+        return nil
+    end
+
+    local function teleportTo(cframe)
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.CFrame = cframe + Vector3.new(0, 2.5, 0)
+        end
+    end
+
+    local foundCandies = {}
+    local isLive = true
+    local isAutoTP = config.AutoServerHop
+    local liveThread = nil
+    local autoThread = nil
+    local joinTime = tick()
+
+    local AutoTPBtn = Instance.new("TextButton")
+
+    -- Fungsi Server Hop Utama
+    local function doServerHop()
+        isLive = false
+        isAutoTP = false
+        disableGodModeFlyNoClip()
+        StatusLabel.Text = "Status: Mencari server baru untuk Server Hop..."
+        saveConfig()
+        
+        if qot then
+            qot([[ task.wait(3) ]])
+        end
+
+        local servers = {}
+        pcall(function()
+            local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+            local response = HttpService:JSONDecode(game:HttpGet(url))
+            for _, server in ipairs(response.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
+            end
+        end)
+
+        if #servers > 0 then
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)], player)
+        else
+            TeleportService:Teleport(game.PlaceId, player)
+        end
+    end
+
+    local function scanAndRefresh()
+        pcall(function()
+            for _, child in ipairs(ScrollingFrame:GetChildren()) do
+                if child:IsA("TextButton") then child:Destroy() end
+            end
+
+            foundCandies = {}
+            local targetName = string.lower(TargetBox.Text)
+            config.TargetName = TargetBox.Text
+            saveConfig()
+            
+            local char = player.Character
+            local rootPart = char and char:FindFirstChild("HumanoidRootPart")
+
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if string.lower(obj.Name) == targetName or (obj.Parent and string.lower(obj.Parent.Name) == targetName) then
+                    local cf = getCFrameOfObject(obj)
+                    if cf then
+                        local dist = rootPart and math.floor((rootPart.Position - cf.Position).Magnitude) or 0
+                        table.insert(foundCandies, {Obj = obj, CFrame = cf, Distance = dist})
+                    end
+                end
+            end
+
+            table.sort(foundCandies, function(a, b) return a.Distance < b.Distance end)
+
+            for idx, item in ipairs(foundCandies) do
+                local btn = Instance.new("TextButton")
+                btn.Size = UDim2.new(1, 0, 0, 32)
+                btn.BackgroundColor3 = Color3.fromRGB(45, 30, 55)
+                btn.TextColor3 = Color3.fromRGB(245, 220, 255)
+                btn.TextSize = 12
+                btn.Font = Enum.Font.SourceSans
+                btn.TextXAlignment = Enum.TextXAlignment.Left
+                btn.Text = string.format("  [%d] %s | Jarak: %d studs", idx, item.Obj.Name, item.Distance)
+                btn.Parent = ScrollingFrame
+
+                local btnCorner = Instance.new("UICorner")
+                btnCorner.CornerRadius = UDim.new(0, 4)
+                btnCorner.Parent = btn
+
+                btn.MouseButton1Click:Connect(function()
+                    if item.Obj and item.Obj.Parent then
+                        teleportTo(item.CFrame)
+                        StatusLabel.Text = "Teleport ke Candy #" .. idx .. "!"
+                    else
+                        StatusLabel.Text = "Objek sudah tidak ada!"
+                    end
+                end)
+            end
+
+            StatusLabel.Text = "Ditemukan " .. #foundCandies .. " " .. TargetBox.Text .. (isLive and " [LIVE]" or "") .. (isAutoTP and " [AUTO + FLY + NOCLIP]" or "")
+
+            -- Cek Auto Server Hop jika permen habis (Grace period 8 detik)
+            if config.AutoServerHop and #foundCandies == 0 and (tick() - joinTime > 8) then
+                doServerHop()
+            end
+        end)
+    end
+
+    local function startLiveThread()
+        if liveThread then task.cancel(liveThread) end
+        liveThread = task.spawn(function()
+            while isLive do
+                scanAndRefresh()
+                task.wait(1.5)
+            end
+        end)
+    end
+
+    local function setAutoTP(state)
+        isAutoTP = state
+        if isAutoTP then
+            enableGodModeFlyNoClip() -- Aktifkan God Mode, Fly, dan NoClip secara otomatis saat Auto TP ON
+            AutoTPBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 200)
+            AutoTPBtn.Text = "⚡ Auto TP: ON"
+            if autoThread then task.cancel(autoThread) end
+            autoThread = task.spawn(function()
+                while isAutoTP do
+                    scanAndRefresh()
+                    if #foundCandies > 0 then
+                        for _, item in ipairs(foundCandies) do
+                            if not isAutoTP then break end
+                            if item.Obj and item.Obj.Parent then
+                                teleportTo(item.CFrame)
+                                task.wait(0.25)
+                            end
+                        end
+                    else
+                        task.wait(1)
+                    end
+                end
+            end)
+        else
+            disableGodModeFlyNoClip() -- Matikan God Mode, Fly, dan NoClip saat Auto TP OFF
+            AutoTPBtn.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+            AutoTPBtn.Text = "⚡ Auto TP: OFF"
+            if autoThread then
+                task.cancel(autoThread)
+                autoThread = nil
+            end
+            scanAndRefresh()
+        end
+    end
+
+    HopToggleBtn.MouseButton1Click:Connect(function()
+        config.AutoServerHop = not config.AutoServerHop
+        if config.AutoServerHop then
+            HopToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 80)
+            HopToggleBtn.Text = "☑️ Auto Server Hop (Jika Kosong): ON"
+            setAutoTP(true)
+        else
+            HopToggleBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+            HopToggleBtn.Text = "☐ Auto Server Hop (Jika Kosong): OFF"
+        end
+        saveConfig()
+    end)
+
+    -- Tombol Bawah
+    local btnWidth = 116
+
+    local LiveBtn = Instance.new("TextButton")
+    LiveBtn.Size = UDim2.new(0, btnWidth, 0, 36)
+    LiveBtn.Position = UDim2.new(0, 10, 1, -46)
+    LiveBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 80)
+    LiveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    LiveBtn.TextSize = 12
+    LiveBtn.Font = Enum.Font.SourceSansBold
+    LiveBtn.Text = "🔴 Live: ON"
+    LiveBtn.Parent = MainFrame
+
+    local LiveCorner = Instance.new("UICorner")
+    LiveCorner.CornerRadius = UDim.new(0, 6)
+    LiveCorner.Parent = LiveBtn
+
+    LiveBtn.MouseButton1Click:Connect(function()
+        isLive = not isLive
+        if isLive then
+            LiveBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 80)
+            LiveBtn.Text = "🔴 Live: ON"
+            startLiveThread()
+        else
+            LiveBtn.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+            LiveBtn.Text = "⚪ Live: OFF"
+            if liveThread then task.cancel(liveThread) end
+            scanAndRefresh()
+        end
+    end)
+
+    AutoTPBtn.Size = UDim2.new(0, btnWidth, 0, 36)
+    AutoTPBtn.Position = UDim2.new(0, 132, 1, -46)
+    AutoTPBtn.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+    AutoTPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    AutoTPBtn.TextSize = 12
+    AutoTPBtn.Font = Enum.Font.SourceSansBold
+    AutoTPBtn.Text = "⚡ Auto TP: OFF"
+    AutoTPBtn.Parent = MainFrame
+
+    local AutoCorner = Instance.new("UICorner")
+    AutoCorner.CornerRadius = UDim.new(0, 6)
+    AutoCorner.Parent = AutoTPBtn
+
+    AutoTPBtn.MouseButton1Click:Connect(function()
+        setAutoTP(not isAutoTP)
+    end)
+
+    local ManualHopBtn = Instance.new("TextButton")
+    ManualHopBtn.Size = UDim2.new(0, btnWidth, 0, 36)
+    ManualHopBtn.Position = UDim2.new(0, 254, 1, -46)
+    ManualHopBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
+    ManualHopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ManualHopBtn.TextSize = 12
+    ManualHopBtn.Font = Enum.Font.SourceSansBold
+    ManualHopBtn.Text = "🌐 Server Hop"
+    ManualHopBtn.Parent = MainFrame
+
+    local HopBtnCorner = Instance.new("UICorner")
+    HopBtnCorner.CornerRadius = UDim.new(0, 6)
+    HopBtnCorner.Parent = ManualHopBtn
+
+    ManualHopBtn.MouseButton1Click:Connect(function()
+        doServerHop()
+    end)
+
+    startLiveThread()
+    if config.AutoServerHop then
+        setAutoTP(true)
+    end
+
+    local function toggleUI()
+        MainFrame.Visible = not MainFrame.Visible
+        OpenBtn.Visible = not MainFrame.Visible
+    end
+
+    MinBtn.MouseButton1Click:Connect(toggleUI)
+    OpenBtn.MouseButton1Click:Connect(toggleUI)
+
+    CloseBtn.MouseButton1Click:Connect(function()
+        isLive = false
+        isAutoTP = false
+        disableGodModeFlyNoClip()
+        if liveThread then task.cancel(liveThread) end
+        if autoThread then task.cancel(autoThread) end
+        ScreenGui:Destroy()
+    end)
+
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if not gameProcessed and input.KeyCode == Enum.KeyCode.J then
+            toggleUI()
+        end
+    end)
+
+    TargetBox:GetPropertyChangedSignal("Text"):Connect(scanAndRefresh)
+    print("[Delta] Candy Teleport Loaded with God Mode, Fly & NoClip!")
+end)
+
+if not success then
+    warn("Gagal memuat script Teleport UI: " .. tostring(err))
+end
