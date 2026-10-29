@@ -1,1 +1,99 @@
-do local _0xS={{195,180,183,195,167,176,169,165,178,185,180},{171,201,216,183,201,214,218,205,199,201},{180,208,197,221,201,214,215},{185,215,201,214,173,210,212,217,216,183,201,214,218,205,199,201},{167,211,214,201,171,217,205},{176,211,199,197,208,180,208,197,221,201,214},{178,197,209,201},{180,208,197,221,201,214,171,217,205},{170,205,210,200,170,205,214,215,216,167,204,205,208,200},{187,197,205,216,170,211,214,167,204,205,208,200},{166,217,198,198,208,201,180,201,214,207},{168,201,215,216,214,211,221},{183,199,214,201,201,210,171,217,205},{182,201,215,201,216,179,210,183,212,197,219,210},{180,197,214,201,210,216},{184,201,220,216,166,217,216,216,211,210},{183,205,222,201},{180,211,215,205,216,205,211,210},{166,197,199,207,203,214,211,217,210,200,167,211,208,211,214,151},{184,201,220,216,167,211,208,211,214,151},{184,201,220,216},{180,201,214,207,132,183,204,211,212,132,140,167,208,205,199,207,132,147,132,175,141},{170,211,210,216},{171,211,216,204,197,209,166,211,208,200},{184,201,220,216,183,205,222,201},{165,217,216,211,166,217,216,216,211,210,167,211,208,211,214},{165,199,216,205,218,201},{185,173,167,211,214,210,201,214},{167,211,214,210,201,214,182,197,200,205,217,215},{185,173,183,216,214,211,207,201},{167,211,208,211,214},{184,204,205,199,207,210,201,215,215},{177,197,205,210},{180,201,214,207,183,204,211,212},{186,205,215,205,198,208,201},{173,210,212,217,216,166,201,203,197,210},{167,211,210,210,201,199,216},{185,215,201,214,173,210,212,217,216,184,221,212,201},{177,211,217,215,201,166,217,216,216,211,210,149},{184,211,217,199,204},{167,204,197,210,203,201,200},{185,215,201,214,173,210,212,217,216,183,216,197,216,201},{169,210,200},{173,210,212,217,216,167,204,197,210,203,201,200},{177,211,217,215,201,177,211,218,201,209,201,210,216},{177,197,203,210,205,216,217,200,201},{188},{183,199,197,208,201},{179,202,202,215,201,216},{189},{177,211,217,215,201,166,217,216,216,211,210,149,167,208,205,199,207},{175,201,221,167,211,200,201},{175},{168,205,215,199,211,210,210,201,199,216}}local _0xL,Il1I1l={},function(_0xI)if not _0xL[_0xI]then local _0xT,_0xR=_0xS[_0xI],{}for _0xK=1,#_0xT do _0xR[_0xK]=string.char(_0xT[_0xK]-(0x12C-0xC8))end _0xL[_0xI]=table.concat(_0xR)end return _0xL[_0xI]end local lI1l1I,I1lI1l,l1Il1I,Il1l1I,lI1Il1,I1ll1I,ll1I1l,I1I1ll,l1lI1I,Il1Il1,l1I1lI,I1l1Il,llI1l1,I1Il1l,l1ll1I=0x01,(getgenv and getgenv())or _G,game,nil,nil,nil,nil,nil,nil,nil,false,false,nil,nil,nil while lI1l1I~=0x00 do if lI1l1I==0x01 then if I1lI1l[Il1I1l(1)]then pcall(I1lI1l[Il1I1l(1)])end Il1l1I=l1Il1I[Il1I1l(2)](l1Il1I,Il1I1l(3))lI1Il1=l1Il1I[Il1I1l(2)](l1Il1I,Il1I1l(4))I1ll1I=l1Il1I[Il1I1l(2)](l1Il1I,Il1I1l(5))ll1I1l=Il1l1I[Il1I1l(6)]lI1l1I=0x02 elseif lI1l1I==0x02 then local _0xOK,_0xHU=pcall(function()return gethui and gethui()end)I1I1ll=(_0xOK and _0xHU)or(pcall(function()return I1ll1I[Il1I1l(7)]end)and I1ll1I)or ll1I1l[Il1I1l(10)](ll1I1l,Il1I1l(8))if I1I1ll[Il1I1l(9)](I1I1ll,Il1I1l(11))then I1I1ll[Il1I1l(11)][Il1I1l(12)](I1I1ll[Il1I1l(11)])end l1lI1I=Instance.new(Il1I1l(13))l1lI1I[Il1I1l(7)]=Il1I1l(11)l1lI1I[Il1I1l(14)]=false l1lI1I[Il1I1l(15)]=I1I1ll lI1l1I=0x03 elseif lI1l1I==0x03 then Il1Il1=Instance.new(Il1I1l(16))Il1Il1[Il1I1l(17)]=UDim2.new(0,0xA0,0,0x28)Il1Il1[Il1I1l(18)]=UDim2.new(0.5,-0x50,0.1,0)Il1Il1[Il1I1l(19)]=Color3.fromRGB(0x14,0x14,0x14)Il1Il1[Il1I1l(20)]=Color3.fromRGB(0xFF,0xFF,0xFF)Il1Il1[Il1I1l(21)]=Il1I1l(22)Il1Il1[Il1I1l(23)]=Enum[Il1I1l(23)][Il1I1l(24)]Il1Il1[Il1I1l(25)]=0x0D Il1Il1[Il1I1l(26)]=true Il1Il1[Il1I1l(27)]=true Il1Il1[Il1I1l(15)]=l1lI1I local _0xCR=Instance.new(Il1I1l(28))_0xCR[Il1I1l(29)]=UDim.new(0,0x08)_0xCR[Il1I1l(15)]=Il1Il1 local _0xSK=Instance.new(Il1I1l(30))_0xSK[Il1I1l(31)]=Color3.fromRGB(0xFF,0xFF,0xFF)_0xSK[Il1I1l(32)]=0x01 _0xSK[Il1I1l(15)]=Il1Il1 lI1l1I=0x04 elseif lI1l1I==0x04 then local function _0xTG()local _0xPG=ll1I1l[Il1I1l(9)](ll1I1l,Il1I1l(8))or ll1I1l[Il1I1l(10)](ll1I1l,Il1I1l(8),5)local _0xMN=_0xPG and(_0xPG[Il1I1l(9)](_0xPG,Il1I1l(33))or _0xPG[Il1I1l(10)](_0xPG,Il1I1l(33),5))local _0xPS=_0xMN and(_0xMN[Il1I1l(9)](_0xMN,Il1I1l(34))or _0xMN[Il1I1l(10)](_0xMN,Il1I1l(34),5))if _0xPS then _0xPS[Il1I1l(35)]=not _0xPS[Il1I1l(35)]end end Il1Il1[Il1I1l(36)][Il1I1l(37)](Il1Il1[Il1I1l(36)],function(_0xIN)if _0xIN[Il1I1l(38)]==Enum[Il1I1l(38)][Il1I1l(39)]or _0xIN[Il1I1l(38)]==Enum[Il1I1l(38)][Il1I1l(40)]then l1I1lI=true I1l1Il=false I1Il1l=_0xIN[Il1I1l(18)]l1ll1I=Il1Il1[Il1I1l(18)]_0xIN[Il1I1l(41)][Il1I1l(37)](_0xIN[Il1I1l(41)],function()if _0xIN[Il1I1l(42)]==Enum[Il1I1l(42)][Il1I1l(43)]then l1I1lI=false end end)end end)Il1Il1[Il1I1l(44)][Il1I1l(37)](Il1Il1[Il1I1l(44)],function(_0xIN)if _0xIN[Il1I1l(38)]==Enum[Il1I1l(38)][Il1I1l(45)]or _0xIN[Il1I1l(38)]==Enum[Il1I1l(38)][Il1I1l(40)]then llI1l1=_0xIN end end)local _0xC1=lI1Il1[Il1I1l(44)][Il1I1l(37)](lI1Il1[Il1I1l(44)],function(_0xIN)if _0xIN==llI1l1 and l1I1lI then local _0xDL=_0xIN[Il1I1l(18)]-I1Il1l if _0xDL[Il1I1l(46)]>3 then I1l1Il=true end Il1Il1[Il1I1l(18)]=UDim2.new(l1ll1I[Il1I1l(47)][Il1I1l(48)],l1ll1I[Il1I1l(47)][Il1I1l(49)]+_0xDL[Il1I1l(47)],l1ll1I[Il1I1l(50)][Il1I1l(48)],l1ll1I[Il1I1l(50)][Il1I1l(49)]+_0xDL[Il1I1l(50)])end end)Il1Il1[Il1I1l(51)][Il1I1l(37)](Il1Il1[Il1I1l(51)],function()if not I1l1Il then _0xTG()end end)local _0xC2=lI1Il1[Il1I1l(36)][Il1I1l(37)](lI1Il1[Il1I1l(36)],function(_0xIN,_0xGP)if not _0xGP and _0xIN[Il1I1l(52)]==Enum[Il1I1l(52)][Il1I1l(53)]then _0xTG()end end)I1lI1l[Il1I1l(1)]=function()if _0xC1 then _0xC1[Il1I1l(54)](_0xC1)end if _0xC2 then _0xC2[Il1I1l(54)](_0xC2)end if l1lI1I and l1lI1I[Il1I1l(15)]then l1lI1I[Il1I1l(12)](l1lI1I)end end lI1l1I=0x00 end end end
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local player = Players.LocalPlayer
+
+local playerGui = player:WaitForChild("PlayerGui")
+local mainUI = playerGui:WaitForChild("Main")
+local perkShopUI = mainUI:WaitForChild("PerkShop")
+
+-- ==========================================
+-- 1. BIKIN BUBBLE POP-UP
+-- ==========================================
+local targetGui = pcall(function() return gethui() end) and gethui() or (pcall(function() return CoreGui end) and CoreGui or playerGui)
+
+if targetGui:FindFirstChild("BubblePerk") then
+    targetGui.BubblePerk:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "BubblePerk"
+screenGui.Parent = targetGui
+
+-- Pakai TextButton biar BISA DIKLIK
+local bubble = Instance.new("TextButton")
+bubble.Size = UDim2.new(0, 160, 0, 40)
+bubble.Position = UDim2.new(0.5, -80, 0.1, 0)
+bubble.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+bubble.TextColor3 = Color3.fromRGB(255, 255, 255)
+bubble.Text = "Perk Shop (Click / K)"
+bubble.Font = Enum.Font.GothamBold
+bubble.TextSize = 13
+bubble.AutoButtonColor = true -- Animasi default saat diklik
+bubble.Active = true
+bubble.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = bubble
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(255, 255, 255)
+stroke.Thickness = 1
+stroke.Parent = bubble
+
+-- ==========================================
+-- 2. FUNGSI TOGGLE (KLIK & KEYBIND K)
+-- ==========================================
+local function toggleShop()
+    if perkShopUI then
+        perkShopUI.Visible = not perkShopUI.Visible
+    end
+end
+
+-- Eksekusi via KLIK BUBBLE:
+bubble.MouseButton1Click:Connect(toggleShop)
+
+-- Eksekusi via KEYBIND K:
+UserInputService.InputBegan:Connect(function(input, isProcessed)
+    if isProcessed then return end
+    if input.KeyCode == Enum.KeyCode.K then
+        toggleShop()
+    end
+end)
+
+-- ==========================================
+-- 3. BUBBLE FULLY DRAGGABLE
+-- ==========================================
+local dragging = false
+local dragInput, dragStart, startPos
+
+bubble.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = bubble.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+bubble.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        bubble.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
