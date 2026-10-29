@@ -1,0 +1,127 @@
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
+local player = Players.LocalPlayer
+
+-- Mengamankan penempatan UI menggunakan gethui() jika didukung executor
+local targetGui = pcall(function() return gethui() end) and gethui() or (pcall(function() return CoreGui end) and CoreGui or player:WaitForChild("PlayerGui"))
+
+-- Hapus UI lama jika script dieksekusi berulang kali
+if targetGui:FindFirstChild("SerikaKeySystem") then
+    targetGui.SerikaKeySystem:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SerikaKeySystem"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = targetGui
+
+-- Background Utama (Panel)
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 320, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -160, 0.5, -100)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true -- Bisa digeser-geser
+mainFrame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(60, 60, 60)
+stroke.Thickness = 1.5
+stroke.Parent = mainFrame
+
+-- Judul Panel
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "SERIKA KEY SYSTEM"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 15
+title.Parent = mainFrame
+
+-- Textbox untuk Input Key
+local textBox = Instance.new("TextBox")
+textBox.Size = UDim2.new(0.85, 0, 0, 45)
+textBox.Position = UDim2.new(0.075, 0, 0.3, 0)
+textBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.PlaceholderText = "Masukkan Key Anda di sini..."
+textBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+textBox.Text = ""
+textBox.Font = Enum.Font.Gotham
+textBox.TextSize = 13
+textBox.ClearTextOnFocus = false
+textBox.Parent = mainFrame
+
+local boxCorner = Instance.new("UICorner")
+boxCorner.CornerRadius = UDim.new(0, 6)
+boxCorner.Parent = textBox
+
+-- Tombol Submit / Verify
+local submitBtn = Instance.new("TextButton")
+submitBtn.Size = UDim2.new(0.85, 0, 0, 40)
+submitBtn.Position = UDim2.new(0.075, 0, 0.6, 0)
+submitBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 255)
+submitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+submitBtn.Text = "SUBMIT KEY"
+submitBtn.Font = Enum.Font.GothamBold
+submitBtn.TextSize = 13
+submitBtn.AutoButtonColor = true
+submitBtn.Parent = mainFrame
+
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 6)
+btnCorner.Parent = submitBtn
+
+-- Label Status (Pemberitahuan Berhasil/Gagal)
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 25)
+statusLabel.Position = UDim2.new(0, 0, 0.82, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = ""
+statusLabel.TextColor3 = Color3.fromRGB(255, 70, 70)
+statusLabel.Font = Enum.Font.GothamMedium
+statusLabel.TextSize = 12
+statusLabel.Parent = mainFrame
+
+-- ==========================================
+-- LOGIKA VALIDASI KEY
+-- ==========================================
+local VALID_KEYS = {
+    ["sayangnatta"] = true,
+    ["sayangrizal"] = true,
+}
+
+local function verifyKey()
+    local enteredKey = textBox.Text
+    
+    if VALID_KEYS[enteredKey] then
+        statusLabel.TextColor3 = Color3.fromRGB(70, 255, 70)
+        statusLabel.Text = "Key Benar! Memuat script..."
+        
+        task.wait(1)
+        -- Hapus UI Key System setelah sukses
+        screenGui:Destroy()
+        
+        -- PANGGIL SCRIPT UTAMA DI SINI
+        -- Contoh: loadstring(game:HttpGet("LINK_RAW_GITHUB_KAMU"))()
+        print(loadstring(game:HttpGet("https://raw.githubusercontent.com/eron-rr/serikaengineering/refs/heads/main/PERKSHOPSTA"))())
+    else
+        statusLabel.TextColor3 = Color3.fromRGB(255, 70, 70)
+        statusLabel.Text = "Key Salah! Coba lagi."
+    end
+end
+
+-- Hubungkan fungsi ke tombol dan tekan Enter
+submitBtn.MouseButton1Click:Connect(verifyKey)
+textBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        verifyKey()
+    end
+end)
